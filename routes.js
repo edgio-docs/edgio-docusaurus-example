@@ -1,14 +1,14 @@
-import { Router } from "@layer0/core/router";
+import { Router } from '@layer0/core/router'
+import { isProductionBuild } from '@layer0/core/environment'
 
-export default new Router().static("build", ({ cache }) => {
-  cache({
-    edge: {
-      maxAgeSeconds: 60 * 60 * 60 * 365,
-      forcePrivateCaching: true,
-    },
-    browser: {
-      maxAgeSeconds: 0,
-      serviceWorkerSeconds: 60 * 60 * 24,
-    },
-  });
-});
+const router = new Router()
+
+if (isProductionBuild()) {
+  router.static('build')
+} else {
+  router.fallback(({ renderWithApp }) => {
+    renderWithApp()
+  })
+}
+
+module.exports = router
